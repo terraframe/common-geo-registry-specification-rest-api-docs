@@ -82,6 +82,7 @@ paths:
       operationId: getChildGeoObjects
       tags:
         - GeoObject
+        - Relationship
       parameters:
         - name: parentUid
           in: query
@@ -121,6 +122,7 @@ paths:
       operationId: getParentGeoObjects
       tags:
         - GeoObject
+        - Relationship
       parameters:
         - name: childUid
           in: query
@@ -160,6 +162,7 @@ paths:
       operationId: getGeoObjectUids
       tags:
         - GeoObject
+        - Metadata
       parameters:
         - name: numberOfUids
           in: query
@@ -188,6 +191,7 @@ paths:
       operationId: getGeoObjectTypes
       tags:
         - GeoObject
+        - Metadata
       parameters:
         - name: types
           in: query
