@@ -385,6 +385,7 @@ definitions:
      - type
      - id
      - geometry
+     - properties
     externalDocs:
       url: https://tools.ietf.org/html/rfc7946#section-3.2
     properties:
@@ -398,6 +399,11 @@ definitions:
         $ref: '#/definitions/GeometryCollection'
       properties:
         type: object
+        required:
+          - uid
+          - code
+          - type
+          - status
         properties:
           uid: 
             type: string
