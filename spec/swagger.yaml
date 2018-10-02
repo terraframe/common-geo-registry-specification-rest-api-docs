@@ -396,7 +396,7 @@ definitions:
       id:
         type: integer
       geometry:
-        $ref: '#/definitions/GeometryCollection'
+        $ref: '#/definitions/Geometry'
       properties:
         type: object
         required:
