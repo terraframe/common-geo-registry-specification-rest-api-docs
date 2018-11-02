@@ -20,7 +20,7 @@ These docs where generated with [ReDoc](https://github.com/Rebilly/ReDoc) from a
 
 ### From editing the configuration directly in GitHub
 It's often easier to make small changes to the OpenAPI spec these docs are rendered from by editing the configuration file directly in GitHub through a web browser. This project uses continuous integration with Travis CI to re-render the docs for every commit pushed to this repository. Since that configuration is hosted in the [formal Common Geospatial Registry specification repository](https://github.com/terraframe/common-geo-registry-specification/blob/master/1.0/registry-interface/rest-api.yaml) outside of this project any change made there through the browser will not be reflected in these docs. To re-render the docs manually simply trigger the build manually through the [Travic CI user interface](https://travis-ci.com/terraframe/common-geo-registry-specification-rest-api-docs)
-#### 
+
 
 ### In a development environment
 #### Install
