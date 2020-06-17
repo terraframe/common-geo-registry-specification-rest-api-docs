@@ -8,10 +8,6 @@ host: yourdomain
 basePath: /v1
 schemes:
   - https
-consumes:
-  - application/json
-produces:
-  - application/json
 paths:
   /geoobject:
     get:
@@ -20,11 +16,20 @@ paths:
       tags:
         - GeoObject
       parameters:
-        - name: uid
+        - name: id
           in: query
-          description: The UID of the GeoObject.
+          description: The ID of the GeoObject.
           required: true
           type: string
+        - name: typeCode
+          in: query
+          description: The code of the GeoObjectType that defines the GeoObject.
+          required: true
+          type: string
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
       responses:
         "200":
           description: A GeoObject in GeoJSON format with the given uid.
@@ -46,34 +51,43 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/GeoObject'
+      consumes:
+        - application/x-www-form-urlencoded
+        - application/json
+      produces:
+        - application/json
       responses:
         "201":
-          description: Null response
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-    put:
-      summary: Update a new GeoObject in the Common Geo-Registry.
-      operationId: updateGeoObject
-      tags:
-        - GeoObject
-      parameters:
-        - name: geoObject
-          in: body
-          description: GeoObject in GeoJSON format to be updated.
-          required: true
+          description: A GeoObject in GeoJSON format of the successfully created object.
           schema:
             $ref: '#/definitions/GeoObject'
-      responses:
-        "201":
-          description: Null response
         default:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-  
-  /childgeoobjects:
+    # post:
+    #   summary: Update a GeoObject in the Common Geo-Registry.
+    #   operationId: updateGeoObject
+    #   tags:
+    #     - GeoObject
+    #   parameters:
+    #     - name: geoObject
+    #       in: body
+    #       description: GeoObject in GeoJSON format to be updated.
+    #       required: true
+    #       schema:
+    #         $ref: '#/definitions/GeoObject'
+    #   responses:
+    #     "201":
+    #       description: A GeoObject in GeoJSON format of the successfully updated object.
+    #       schema:
+    #         $ref: '#/definitions/GeoObject'
+    #     default:
+    #       description: unexpected error
+    #       schema:
+    #         $ref: '#/definitions/Error'
+
+  /geoobject/getchildren:
     get:
       summary: Get children of the given GeoObject.
       operationId: getChildGeoObjects
@@ -81,14 +95,19 @@ paths:
         - GeoObject
         - Relationship
       parameters:
-        - name: parentUid
+        - name: parentId
           in: query
-          description: UID of the parent object for which the call fetches children.
+          description: ID of the parent object for which the call fetches children.
           required: true
           type: string
-        - name: childrenTypes
+        - name: parentTypeCode
           in: query
-          description: An array of GeoObjectType names of the types of children GeoObjects to fetch. If blank then return children of all types.
+          description: The code of the GeoObjectType that defines the parent GeoObject.
+          required: true
+          type: string
+        - name: childrenType
+          in: query
+          description: An array of GeoObjectType codes that define the types of children GeoObjects to fetch. If blank then return children of all types.
           required: true
           type: array
           collectionFormat: csv
@@ -96,9 +115,13 @@ paths:
             type: string
         - name: recursive
           in: query
-          description: recursive TRUE if recursive children of the given parent with the given types should be returned, FALSE if only single level children should be returned.
+          description: TRUE if recursive children of the given parent with the given types should be returned, FALSE if only single level children should be returned.
           required: true
           type: string
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
       responses:
         "200":
           description: A ChildTreeNode object.
@@ -108,8 +131,8 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-            
-  /parentgeoobjects:
+
+  /geoobject/get-parent-geoobjects:
     get:
       summary: Get parents of the given GeoObject.
       operationId: getParentGeoObjects
@@ -117,14 +140,19 @@ paths:
         - GeoObject
         - Relationship
       parameters:
-        - name: childUid
+        - name: childId
           in: query
           description: UID of the child object for which the call fetches parents.
           required: true
           type: string
+        - name: childTypeCode
+          in: query
+          description: The code of the GeoObjectType that defines the child GeoObject.
+          required: true
+          type: string
         - name: parentTypes
           in: query
-          description: An array of GeoObjectType names of the types of parent GeoObjects to fetch. If blank then return parents of all types.
+          description: An array of GeoObjectType codes of the types of parent GeoObjects to fetch. If blank then return parents of all types.
           required: true
           type: array
           collectionFormat: csv
@@ -135,6 +163,10 @@ paths:
           description: TRUE if recursive parents of the given parent with the given types should be returned, FALSE if only single level parents should be returned.
           required: true
           type: string
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
       responses:
         "200":
           description: A ParentTreeNode object.
@@ -144,7 +176,7 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-            
+
   /geoobjectuids:
     get:
       summary: 	Get list of valid UIDs for use in creating new GeoObjects. The Common Geo-Registry will only accept newly created GeoObjects with a UID that was issued from the Common GeoRegistry.
@@ -158,6 +190,10 @@ paths:
           description: NumberofUIDs that the Common Geo-Registry will issue to the mobile device.
           required: true
           type: integer
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
       responses:
         "200":
           description: An array of UIDs.
@@ -169,7 +205,7 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-            
+
   /geoobjecttypes:
     get:
       summary: Return GeoOjectType objects that define the given list of types.
@@ -185,7 +221,10 @@ paths:
           type: array
           items:
             type: string
-  
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
       responses:
         "200":
           description: An array of GeoObjectType objects.
@@ -197,7 +236,7 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
-            
+
 definitions:
 
   TreeNode:
@@ -213,17 +252,17 @@ definitions:
     properties:
       geoObject:
         $ref: '#/definitions/GeoObject'
-      hierarchyType: 
+      hierarchyType:
         type: string
       children:
         type: array
         items:
           $ref: '#/definitions/ChildTreeNode'  # ReDoc UI can't render circular references
-          
+
   ParentTreeNode:
     type: object
     properties:
-      geoObject: 
+      geoObject:
         $ref: '#/definitions/GeoObject'
       hierarchyType:
         type: string
@@ -232,44 +271,44 @@ definitions:
         description: test
         items:
           $ref: '#/definitions/TreeNode'  # ReDoc UI can't render circular references
-    
+
   GeoObject:
     $ref: "#/definitions/Feature"
-    
+
   GeoObjects:
     type: array
     items:
       $ref: '#/definitions/GeoObject'
-      
+
   GeoObjectType:
     type: object
     properties:
       code:
         type: string
-      localizedLabel: 
+      localizedLabel:
         type: string
-      localizedDescription: 
+      localizedDescription:
         type: string
-      attributes: 
+      attributes:
         type: array
         items:
           $ref: '#/definitions/AttributeType'
-    
+
   AttributeType:
     type: object
     properties:
-      code: 
+      code:
         type: string
       localizedLabel:
         type: string
       type:
         type: string
- 
+
   AttributeTypes:
     type: array
     items:
       $ref: '#/definitions/AttributeType'
-  
+
   Term:
     type: object
     properties:
@@ -301,7 +340,7 @@ definitions:
         - MultiLineString
         - MultiPolygon
         description: the geometry type
-    
+
   Point3D:
     type: array
     description: Point in 3D space
@@ -311,7 +350,7 @@ definitions:
     maxItems: 3
     items:
       type: number
-          
+
   Point:
     type: object
     description: GeoJSon geometry
@@ -322,7 +361,7 @@ definitions:
       - properties:
           coordinates:
             $ref: '#/definitions/Point3D'
-            
+
   LineString:
     type: object
     description: GeoJSon geometry
@@ -449,7 +488,7 @@ definitions:
             $ref: '#/definitions/GeoObjectType'
           status:
             $ref: '#/definitions/Term'
-             
+
   Error:
     required:
       - code
@@ -460,4 +499,3 @@ definitions:
         format: int32
       message:
         type: string
-
