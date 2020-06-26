@@ -9,7 +9,7 @@ basePath: /v1
 schemes:
   - https
 paths:
-  /cgr/geoobject/get-all:
+  /geoobject/get-all:
     get:
       summary: Returns a GeoObject with the given uid.
       operationId: getGeoObject
