@@ -26,6 +26,21 @@ paths:
           description: The code of the Hierarchy that the GeoObjectType belongs to. Default is FALSE.
           required: true
           type: string
+        - name: externalSystemId
+          in: query
+          description: The id of the external system registered in the CGR.
+          required: true
+          type: string
+        - name: pageNumber
+          in: query
+          description: Page number used for pagination.
+          required: true
+          type: integer
+        - name: pageSize
+          in: query
+          description: Page size (number or results to return) used for pagination.
+          required: true
+          type: integer
         - name: includeGeographicLevel
           in: query
           description: TRUE to return the level in the hierarchy the GeoObjectType resides.
@@ -42,16 +57,6 @@ paths:
           required: false
           type: string
           enum: [REVEAL, JSON_CGR]
-        - name: pageNumber
-          in: query
-          description: Page number used for pagination.
-          required: true
-          type: integer
-        - name: pageSize
-          in: query
-          description: Page size (number or results to return) used for pagination.
-          required: true
-          type: integer
       consumes:
         - application/x-www-form-urlencoded
       produces:
