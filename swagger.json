@@ -1,0 +1,545 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Common Geo-Registry REST API",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "host": "yourdomain",
+  "basePath": "/v1",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/geoobject/get-all": {
+      "get": {
+        "summary": "Returns a GeoObject with the given uid.",
+        "operationId": "getGeoObject",
+        "tags": [
+          "GeoObject"
+        ],
+        "parameters": [
+          {
+            "name": "typeCode",
+            "in": "query",
+            "description": "The code of the GeoObjectType that defines the GeoObjects.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "hierarchyCode",
+            "in": "query",
+            "description": "The code of the Hierarchy that the GeoObjectType belongs to. Default is FALSE.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "externalSystemId",
+            "in": "query",
+            "description": "The id of the external system registered in the CGR.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "description": "Page number used for pagination.",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Page size (number or results to return) used for pagination.",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "includeGeographicLevel",
+            "in": "query",
+            "description": "TRUE to return the level in the hierarchy the GeoObjectType resides.",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "updatedSince",
+            "in": "query",
+            "description": "Date in UTC from wich only GeoObjects will returned that have been updated.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Format the GeoObjects will returned as. Default is JSON_CGR.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "REVEAL",
+              "JSON_CGR"
+            ]
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "A GeoObject in GeoJSON format with the given uid.",
+            "schema": {
+              "$ref": "#/definitions/GeoObject"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cgr/geoobjecttype/get-all": {
+      "get": {
+        "summary": "Return GeoOjectType objects that define the given list of types.",
+        "operationId": "getGeoObjectTypes",
+        "tags": [
+          "GeoObjectType",
+          "Metadata"
+        ],
+        "parameters": [
+          {
+            "name": "types",
+            "in": "query",
+            "description": "An array of GeoObjectType codes. If blank then all GeoObjectType objects are returned.",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hierarchies",
+            "in": "query",
+            "description": "An array of Hierarchy codes. If blank then all Hierarchy objects are returned.",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of GeoObjectType objects.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/GeoObjectType"
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "TreeNode": {
+      "type": "object",
+      "properties": {
+        "geoObject": {
+          "$ref": "#/definitions/GeoObject"
+        },
+        "hierarchyType": {
+          "type": "string"
+        }
+      }
+    },
+    "ChildTreeNode": {
+      "type": "object",
+      "properties": {
+        "geoObject": {
+          "$ref": "#/definitions/GeoObject"
+        },
+        "hierarchyType": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChildTreeNode"
+          }
+        }
+      }
+    },
+    "ParentTreeNode": {
+      "type": "object",
+      "properties": {
+        "geoObject": {
+          "$ref": "#/definitions/GeoObject"
+        },
+        "hierarchyType": {
+          "type": "string"
+        },
+        "parents": {
+          "type": "array",
+          "description": "test",
+          "items": {
+            "$ref": "#/definitions/TreeNode"
+          }
+        }
+      }
+    },
+    "GeoObject": {
+      "$ref": "#/definitions/Feature"
+    },
+    "GeoObjects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/GeoObject"
+      }
+    },
+    "GeoObjectType": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "localizedLabel": {
+          "type": "string"
+        },
+        "localizedDescription": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AttributeType"
+          }
+        }
+      }
+    },
+    "AttributeType": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "localizedLabel": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "AttributeTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/AttributeType"
+      }
+    },
+    "Term": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "localizedLabel": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Term"
+          }
+        }
+      }
+    },
+    "Geometry": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "discriminator": "type",
+      "required": [
+        "type"
+      ],
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#geometry-objects"
+      },
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Point",
+            "LineString",
+            "Polygon",
+            "MultiPoint",
+            "MultiLineString",
+            "MultiPolygon"
+          ],
+          "description": "the geometry type"
+        }
+      }
+    },
+    "Point3D": {
+      "type": "array",
+      "description": "Point in 3D space",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id2"
+      },
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "number"
+      }
+    },
+    "Point": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id2"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/Geometry"
+        },
+        {
+          "properties": {
+            "coordinates": {
+              "$ref": "#/definitions/Point3D"
+            }
+          }
+        }
+      ]
+    },
+    "LineString": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id3"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/Geometry"
+        },
+        {
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Point3D"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Polygon": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id4"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/Geometry"
+        },
+        {
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Point3D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "MultiPoint": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id5"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/Geometry"
+        },
+        {
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Point3D"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "MultiLineString": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id6"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/Geometry"
+        },
+        {
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Point3D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "MultiPolygon": {
+      "type": "object",
+      "description": "GeoJSon geometry",
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#id6"
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/Geometry"
+        },
+        {
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Point3D"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "GeometryCollection": {
+      "type": "object",
+      "description": "GeoJSon geometry collection",
+      "required": [
+        "type",
+        "geometries"
+      ],
+      "externalDocs": {
+        "url": "http://geojson.org/geojson-spec.html#geometrycollection"
+      },
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "GeometryCollection"
+          ]
+        },
+        "geometries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Geometry"
+          }
+        }
+      }
+    },
+    "Feature": {
+      "type": "object",
+      "description": "GeoJSon Feature",
+      "required": [
+        "type",
+        "id",
+        "geometry",
+        "properties"
+      ],
+      "externalDocs": {
+        "url": "https://tools.ietf.org/html/rfc7946#section-3.2"
+      },
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Feature"
+          ]
+        },
+        "id": {
+          "type": "integer"
+        },
+        "geometry": {
+          "$ref": "#/definitions/Geometry"
+        },
+        "properties": {
+          "type": "object",
+          "required": [
+            "uid",
+            "code",
+            "type",
+            "status"
+          ],
+          "properties": {
+            "uid": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "type": {
+              "$ref": "#/definitions/GeoObjectType"
+            },
+            "status": {
+              "$ref": "#/definitions/Term"
+            }
+          }
+        }
+      }
+    },
+    "Error": {
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

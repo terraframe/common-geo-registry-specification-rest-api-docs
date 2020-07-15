@@ -1,0 +1,11 @@
+{
+  "generator-openapi-repo": {
+    "importExistingSpec": true,
+    "importedSpec": "/home/justin/git/common-geo-registry-specification/1.0/registry-interface/rest-api.yaml",
+    "name": "Common Geo-Registry Specicification REST",
+    "repo": "terraframe/common-geo-registry-specification-rest-api-docs",
+    "splitSpec": false,
+    "samples": false,
+    "installSwaggerUI": true
+  }
+}
